@@ -35,6 +35,7 @@ public class GVDT_Agente1 : ISSR_Agent
     //Podemos programar las acciones
     public override void onGripSuccess(ISSR_Object obj_gripped)
     {
+
       Debug.LogFormat("{0}: piedra {1} cogida, voy para la meta", Myself.Name, obj_gripped.Name);
       acGotoLocation(iMyGoalLocation());
     }

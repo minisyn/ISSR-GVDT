@@ -8,7 +8,7 @@ public class GVDT_Agente1 : ISSR_Agent
     // Start is called before the first frame update
     public override void Start()
     {
-        Debug.LogFormat("{0}: Comienza", Myself.Name);
+      //  Debug.LogFormat("{0}: Comienza", Myself.Name);
     }
 
     // Update is called once per frame

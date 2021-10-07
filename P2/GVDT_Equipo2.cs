@@ -18,8 +18,8 @@ public class GVDT_Equipo2 : ISSR_TeamBehaviour {
                 }
             }
         }
-      
+
     }
 
- 
+
 }

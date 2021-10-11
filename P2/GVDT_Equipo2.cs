@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GVDT_Equipo1 : ISSR_TeamBehaviour{
+public class GVDT_Equipo2 : ISSR_TeamBehaviour{
 
     public override void CreateTeam(){
       //No hay error al inicializar
@@ -12,7 +12,7 @@ public class GVDT_Equipo1 : ISSR_TeamBehaviour{
           Debug.Log("El equipo GVDT despierta");
           for(int index=0; index < this.GetNumberOfAgentsInTeam(); index ++){
             //Crear agentes en posiciones de los marcadores
-            CreateAgent(new GVDT_Agente1());
+            CreateAgent(new GVDT_Agente2());
           }
         }
       }

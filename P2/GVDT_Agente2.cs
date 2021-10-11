@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 //Hola don pepito
 //hola don jose
-public class GVDT_Agente1 : ISSR_Agent
+public class GVDT_Agente2 : ISSR_Agent
 {
     public bool target_fixed = false;
     // Start is called before the first frame update

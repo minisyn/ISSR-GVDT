@@ -21,7 +21,7 @@ public class GVDT_Agente2 : ISSR_Agent
             current_state = AgentStateMachine();
         }
     }
-       // Código vacío para función de estado Idle y OTROS DOS
+    // Código vacío para función de estado Idle y OTROS DOS
     ISSRState SF_Idle()  // SF “State Function”
     {
         ISSRState next_state = current_state;
@@ -102,7 +102,6 @@ public class GVDT_Agente2 : ISSR_Agent
 
         if ((obj.type == ISSR_Type.SmallStone) && !Valid_Small_Stones.Contains((obj)))
         {
-            //target_fixed = true;
             Valid_Small_Stonees.add(obj);
             Debug.LogFormat("{0}: nueva piedra pequeña {1}, anotada", Myself.Name, obj.Name);
         }
@@ -112,18 +111,16 @@ public class GVDT_Agente2 : ISSR_Agent
     //Podemos programar las acciones
     public override void onGripSuccess(ISSR_Object obj_gripped)
     {
-
         Debug.LogFormat("{0}: agarra {1}, va para la meta", Myself.Name, obj_gripped.Name);
         current_state = AgentStateMachine();
     }
 
     public override void onGObjectScored(ISSR_Object stone_that_scored)
     {
-        //target_fixed = false;
         Debug.LogFormat("{0}: piedra {1} en meta", Myself.Name, stone_that_scored.Name);
         current_state = AgentStateMachine();
     }
- ISSRState AgentStateMachine() // Función principal de máquina de estados
+    ISSRState AgentStateMachine() // Función principal de máquina de estados
     {
         ISSRState next_state = current_state; // estado de salida, en principio igual
 
@@ -149,7 +146,6 @@ public class GVDT_Agente2 : ISSR_Agent
             Debug.LogWarningFormat("{0}: Estado '{1}'-->'{2}' por evento '{3}'", Myself.Name,
                            current_state, next_state, current_event);
         }
-
         return next_state;
     }
 }

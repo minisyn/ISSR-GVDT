@@ -50,6 +50,7 @@ public class GVDT_Agente2 : ISSR_Agent
                     Debug.LogFormat("{0}: no reconozco más piedras pequeñas", Myself.Name);
                     next_state = ISSRState.End;
                 }
+                break;
             default:
                 // Debug.LogWarningFormat("{0} Evento '{1}' no considerado en estado '{2}'",                     
                 //    Myself.Name, current_event, current_state);
@@ -59,27 +60,28 @@ public class GVDT_Agente2 : ISSR_Agent
         return next_state;
     }
 
-    ISSRState SF_GoinToGripSmallStone()
+    ISSRState SF_GoingToGripSmallStone()
     {
         ISSRState next_state = current_state;
         switch (current_event)
         {
             case ISSREventType.onGripSuccess:
                 Valid_Small_Stones.Remove(focus_object);
-                acGotoLocation();
-                if (acCheckError)
+                acGotoLocation(iMyGoalLocation());
+                if (acCheckError())
                 {
                     next_state = ISSRState.Error;
                 }
                 else
                 {
-                    Debug.Debug.LogFormat("{0}: De camino a la meta", Myself.Name);
+                    Debug.LogFormat("{0}: De camino a la meta", Myself.Name);
                     next_state = ISSRState.GoingToGoal;
                 }
                 break;
             default:
                 break;
         }
+        return next_state;
     }
 
     ISSRState SF_GoingToGoalWithSmallStone()
@@ -90,19 +92,22 @@ public class GVDT_Agente2 : ISSR_Agent
             case ISSREventType.onGObjectScored:
                 next_state = ISSRState.Idle;
                 Debug.LogFormat("{0}: Piedra {1} anotada", Myself.Name, focus_object.Name);
+                break;
             default:
                 break;
         }
+
+        return next_state;
     }
 
 
     public override void onEnterSensingArea(ISSR_Object obj)
     {
-        objet_just_seen = obj;
+        object_just_seen = obj;
 
         if ((obj.type == ISSR_Type.SmallStone) && !Valid_Small_Stones.Contains((obj)))
         {
-            Valid_Small_Stonees.add(obj);
+            Valid_Small_Stones.Add(obj);
             Debug.LogFormat("{0}: nueva piedra pequeña {1}, anotada", Myself.Name, obj.Name);
         }
         current_state = AgentStateMachine();

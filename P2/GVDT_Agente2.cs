@@ -21,37 +21,7 @@ public class GVDT_Agente2 : ISSR_Agent
             current_state = AgentStateMachine();
         }
     }
-    ISSRState AgentStateMachine() // Función principal de máquina de estados
-    {
-        ISSRState next_state = current_state; // estado de salida, en principio igual
-
-        switch (current_state) // Según el estado
-        {
-            case ISSRState.Idle:
-                next_state = SF_Idle();
-                break;
-            case ISSRState.GoingToGripSmallStone:
-                next_state = SF_GoingToGripSmallStone();
-                break;
-            case ISSRState.GoingToGoalWithSmallStone:
-                next_state = SF_GoingToGoalWithSmallStone();
-                break;
-            default:
-                Debug.LogErrorFormat("{0}: estado {1} no considerado", Myself.Name,
-                    current_state);
-                break;
-        }
-
-        if (current_state != next_state) // Si ha cambiado el estado
-        {
-            Debug.LogWarningFormat("{0}: Estado '{1}'-->'{2}' por evento '{3}'", Myself.Name,
-                           current_state, next_state, current_event);
-        }
-
-        return next_state;
-    }
-
-    // Código vacío para función de estado Idle y OTROS DOS
+       // Código vacío para función de estado Idle y OTROS DOS
     ISSRState SF_Idle()  // SF “State Function”
     {
         ISSRState next_state = current_state;
@@ -152,5 +122,34 @@ public class GVDT_Agente2 : ISSR_Agent
         //target_fixed = false;
         Debug.LogFormat("{0}: piedra {1} en meta", Myself.Name, stone_that_scored.Name);
         current_state = AgentStateMachine();
+    }
+ ISSRState AgentStateMachine() // Función principal de máquina de estados
+    {
+        ISSRState next_state = current_state; // estado de salida, en principio igual
+
+        switch (current_state) // Según el estado
+        {
+            case ISSRState.Idle:
+                next_state = SF_Idle();
+                break;
+            case ISSRState.GoingToGripSmallStone:
+                next_state = SF_GoingToGripSmallStone();
+                break;
+            case ISSRState.GoingToGoalWithSmallStone:
+                next_state = SF_GoingToGoalWithSmallStone();
+                break;
+            default:
+                Debug.LogErrorFormat("{0}: estado {1} no considerado", Myself.Name,
+                    current_state);
+                break;
+        }
+
+        if (current_state != next_state) // Si ha cambiado el estado
+        {
+            Debug.LogWarningFormat("{0}: Estado '{1}'-->'{2}' por evento '{3}'", Myself.Name,
+                           current_state, next_state, current_event);
+        }
+
+        return next_state;
     }
 }

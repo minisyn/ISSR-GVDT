@@ -28,7 +28,7 @@ public class GVDT_Agente2 : ISSR_Agent
         switch (current_state) // Según el estado
         {
             case ISSRState.Idle:
-                next_state = SF_Idle;
+                next_state = SF_Idle();
                 break;
             case ISSRState.GoingToGripSmallStone:
                 next_state = SF_GoingToGripSmallStone();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//REALIZAR UNA FUNCION PARA LA COMPROBACIÓN DE ERRORES DE FORMA AUTOMÁTICA (JUGAR CON HERENCIAS)
 
 public class GVDT_Agente3 : ISSR_Agent
 {

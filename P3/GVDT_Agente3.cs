@@ -24,17 +24,16 @@ public class GVDT_Agente3 : ISSR_Agent
     // Código vacío para función de estado Idle y OTROS DOS
     ISSRState SF_Idle()  // SF “State Function”
     {
-        ISSRState next_state = current_state;
 
+        ISSRState next_state = current_state;
         switch (current_event) // Según el evento
         {
             case ISSREventType.onTickElapsed:
                 //coger de la lista el objeto más cercano al agente del tipo SmallStone (Objeto focuseado)
                 focus_object = ISSRHelp.GetCloserToMeObjectInList(this, Valid_Small_Stones, ISSR_Type.SmallStone);
-
                 if (focus_object != null)
                 {
-                    next_state = ProcessStone();
+                    next_state = processStone();
                 }
                 else
                 {
@@ -53,10 +52,12 @@ public class GVDT_Agente3 : ISSR_Agent
 
     ISSRState SF_GoingToGripSmallStone()
     {
+
         ISSRState next_state = current_state;
         switch (current_event)
         {
             case ISSREventType.onGripSuccess:
+
                 Valid_Small_Stones.Remove(focus_object);
                 acGotoLocation(iMyGoalLocation());
                 if (acCheckError())
@@ -69,7 +70,9 @@ public class GVDT_Agente3 : ISSR_Agent
                     next_state = ISSRState.GoingToGoalWithSmallStone;
                 }
                 break;
+
             case ISSREventType.onEnterSensingArea:
+
                 if (object_just_seen.Equals(focus_object)) // veo justo la piedra que 'recuerdo'
                 {
                     acGripObject(focus_object); // intento agarrar esa piedra pequeña
@@ -79,10 +82,12 @@ public class GVDT_Agente3 : ISSR_Agent
                     }
                 }
                 break;
+
             case ISSREventType.onCollision:
+
                 if (colliding_object.Equals(focus_object))
                 {
-                    next_state = ProcessStone();
+                    next_state = processStone();
                     if (acCheckError())
                     {
                         next_state = ISSRState.Error;
@@ -93,7 +98,9 @@ public class GVDT_Agente3 : ISSR_Agent
                     next_state = processCollision();
                 }
                 break;
+
             default:
+
                 Debug.LogWarningFormat("{0} Evento '{1}' no considerado en estado '{2}'",
                       Myself.Name, current_event, current_state);
                 break;
@@ -103,46 +110,63 @@ public class GVDT_Agente3 : ISSR_Agent
 
     ISSRState SF_GoingToGoalWithSmallStone()
     {
+
         ISSRState next_state = current_state;
         switch (current_event)
         {
             case ISSREventType.onGObjectScored:
+
                 next_state = ISSRState.Idle;
                 Debug.LogFormat("{0}: Piedra {1} anotada", Myself.Name, focus_object.Name);
                 break;
+
             case ISSREventType.onCollision:
+
                 next_state = processCollision();
                 break;
+
             case ISSREventType.onGObjectCollision:
+
                 next_state = processCollision();
                 break;
+
             default:
+
                 Debug.LogWarningFormat("{0} Evento '{1}' no considerado en estado '{2}'",
                       Myself.Name, current_event, current_state);
                 break;
         }
-
         return next_state;
     }
 
     ISSRState SF_AvoidingObstacle()
     {
+
         ISSRState next_state = current_state;
         switch (current_event)
         {
             case ISSREventType.onCollision:
+
                 next_state = processCollision();
                 break;
+
             case ISSREventType.onGObjectCollision:
+
                 next_state = processCollision();
                 break;
+
             case ISSREventType.onDestArrived:
+
                 next_state = ResumeAfterCollision();
                 break;
+
             case ISSREventType.onGObjectScored:
+
                 next_state = SF_Idle();
                 break;
+
             default:
+
                 Debug.LogWarningFormat("{0} Evento '{1}' no considerado en estado '{2}'",
                       Myself.Name, current_event, current_state);
                 break;
@@ -150,7 +174,7 @@ public class GVDT_Agente3 : ISSR_Agent
         return next_state;
     }
 
-    private ISSRState ProcessStone()
+    private ISSRState processStone()
     {
         ISSRState next_state;
 
@@ -185,17 +209,24 @@ public class GVDT_Agente3 : ISSR_Agent
         switch (current_state)
         {
             case ISSRState.GoingToGripSmallStone:
+
                 last_state = current_state;
                 next_state = acGotoSafeLocation();
                 break;
+
             case ISSRState.GoingToGoalWithSmallStone:
+
                 last_state = current_state;
                 next_state = acGotoSafeLocation();
                 break;
+
             case ISSRState.AvoidingObstacle:
+
                 next_state = acGotoSafeLocation();
                 break;
+
             default:
+
                 Debug.LogErrorFormat("{0}, estado {1} no considerado al colisionar", Myself.Name, current_state);
                 break;
         }
@@ -205,6 +236,7 @@ public class GVDT_Agente3 : ISSR_Agent
 
     private ISSRState acGotoSafeLocation()
     {
+
         ISSRState next_state;
         acGotoLocation(ISSRHelp.CalculateSafeLocation(this, colliding_object));
         if (acCheckError())
@@ -225,9 +257,12 @@ public class GVDT_Agente3 : ISSR_Agent
         switch (last_state)
         {
             case ISSRState.GoingToGripSmallStone:
-                next_state = ProcessStone();  // Volver a pedir coger piedra o ir a su lugar
+
+                next_state = processStone();  // Volver a pedir coger piedra o ir a su lugar
                 break;
+
             case ISSRState.GoingToGoalWithSmallStone:
+
                 acGotoLocation(iMyGoalLocation());  // volver a pedir ir a la meta
                 if (acCheckError())
                 {
@@ -238,6 +273,7 @@ public class GVDT_Agente3 : ISSR_Agent
                     next_state = ISSRState.GoingToGoalWithSmallStone;
                 }
                 break;
+
             default:
                 Debug.LogErrorFormat("{0}, estado {1} no considerado al volver de colisi�n", Myself.Name, last_state);
                 break;
@@ -295,20 +331,31 @@ public class GVDT_Agente3 : ISSR_Agent
         switch (current_state) // Según el estado
         {
             case ISSRState.Idle:
+
                 next_state = SF_Idle();
                 break;
+
             case ISSRState.GoingToGripSmallStone:
+
                 next_state = SF_GoingToGripSmallStone();
                 break;
+
             case ISSRState.GoingToGoalWithSmallStone:
+
                 next_state = SF_GoingToGoalWithSmallStone();
                 break;
+
             case ISSRState.AvoidingObstacle:
+
                 next_state = SF_AvoidingObstacle();
                 break;
+
             case ISSRState.End:
+
                 break;
+
             default:
+
                 Debug.LogErrorFormat("{0}: estado {1} no considerado", Myself.Name,
                     current_state);
                 break;
@@ -319,6 +366,7 @@ public class GVDT_Agente3 : ISSR_Agent
             Debug.LogWarningFormat("{0}: Estado '{1}'-->'{2}' por evento '{3}'", Myself.Name,
                            current_state, next_state, current_event);
         }
+
         return next_state;
     }
 }

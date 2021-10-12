@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GVDT_Equipo2 : ISSR_TeamBehaviour{
+public class GVDT_Equipo3 : ISSR_TeamBehaviour{
 
     public override void CreateTeam(){
       //No hay error al inicializar

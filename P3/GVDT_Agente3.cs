@@ -240,7 +240,6 @@ public class GVDT_Agente3 : ISSR_Agent
                 break;
             default:
                 Debug.LogErrorFormat("{0}, estado {1} no considerado al volver de colisi�n", Myself.Name, last_state);
-                return current_state;
                 break;
         }
         return next_state;

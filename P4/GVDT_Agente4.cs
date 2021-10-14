@@ -346,6 +346,11 @@ public class GVDT_Agente4 : ISSR_Agent
                 next_state = SF_GoingToGoalWithSmallStone();
                 break;
 
+            case :
+                ISSRState.WaitforNoStonesMoving:
+
+                break;
+
             case ISSRState.AvoidingObstacle:
 
                 next_state = SF_AvoidingObstacle();

@@ -11,7 +11,7 @@ public class GVDT_Equipo3 : ISSR_TeamBehaviour{
           Debug.Log("El equipo GVDT despierta");
           for(int index=0; index < this.GetNumberOfAgentsInTeam(); index ++){
             //Crear agentes en posiciones de los marcadores
-            CreateAgent(new GVDT_Agente3());
+            CreateAgent(new GVDT_Agente4());
           }
         }
       }

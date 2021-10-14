@@ -4,7 +4,7 @@ using UnityEngine;
 
 //REALIZAR UNA FUNCION PARA LA COMPROBACIÓN DE ERRORES DE FORMA AUTOMÁTICA (JUGAR CON HERENCIAS)
 
-public class GVDT_Agente3 : ISSR_Agent
+public class GVDT_Agente4 : ISSR_Agent
 {
     public override void Start()
     {

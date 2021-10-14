@@ -346,8 +346,7 @@ public class GVDT_Agente4 : ISSR_Agent
                 next_state = SF_GoingToGoalWithSmallStone();
                 break;
 
-            case :
-                ISSRState.WaitforNoStonesMoving:
+            case ISSRState.WaitforNoStonesMoving:
 
                 break;
 

@@ -369,7 +369,7 @@ public class GVDT_Agente4 : ISSR_Agent {
     private ISSRState ProcessCollision()  // Procesar colisi�n 
     {
         ISSRState next_state = current_state;
-        Vector3 localizacionSegura = ISSRHelp.CalculateSafeLocation(this, colliding_object);//calcula posicion segura para evitar obstáculo
+        
 
         switch (current_state)
             
@@ -378,21 +378,17 @@ public class GVDT_Agente4 : ISSR_Agent {
             case ISSRState.GoingToGripSmallStone:
 
                 last_state = current_state;//Guarda el estado actual en el último estado para así poder recuperarlo más tarde y poder completar lo que se estaba llevando a cabo antes de la colisión
-                acGotoLocation(localizacionSegura);//solicita ir a la posición segura
-                next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.AvoidingObstacle);
+                next_state=acGotoSafeLocation();
                 break;
             case ISSRState.GoingToGoalWithSmallStone:
 
                 last_state = current_state;//Guarda el estado actual en el último estado para así poder recuperarlo más tarde y poder completar lo que se estaba llevando a cabo antes de la colisió
-                acGotoLocation(localizacionSegura);//solicita ir a la posición segura
-                next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.AvoidingObstacle);
+                next_state = acGotoSafeLocation();
                 break;
 
             case ISSRState.AvoidingObstacle:
-              
-                acGotoLocation(localizacionSegura);
-                next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.AvoidingObstacle);
 
+                next_state = acGotoSafeLocation();
                 break;
 
             default:
@@ -523,6 +519,15 @@ public class GVDT_Agente4 : ISSR_Agent {
             return estadoAlqueSeQuierePasar;
         }
 
+    }
+
+    private ISSRState acGotoSafeLocation()
+    {
+
+        ISSRState next_state;
+        acGotoLocation(ISSRHelp.CalculateSafeLocation(this, colliding_object));
+        next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.AvoidingObstacle);
+        return next_state;
     }
 
 }

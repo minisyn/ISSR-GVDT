@@ -483,7 +483,7 @@ public class GVDT_Agente4 : ISSR_Agent {
         {
             if (ISSRHelp.Distance_from_object_to_me(this, focus_object) < iSensingRange())
             {
-                next_state = descartarPiedraPararYPasarAEstadoIDLE(ISSRState.Idle);
+                next_state = descartarPiedraPararYPasarAEstadoIDLE(stone);
             }
             else
             {

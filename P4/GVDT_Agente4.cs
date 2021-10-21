@@ -487,19 +487,14 @@ public class GVDT_Agente4 : ISSR_Agent {
         {
             if (ISSRHelp.Distance_from_object_to_me(this, focus_object) < iSensingRange())
             {
-                SStoneIsAvailable(stone, false);//descartamos la piedra de la lista de piedras disponibles
-                acStop();
-                next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Idle);
-
+                next_state = descartarPiedraPararYPasarAEstadoIDLE(ISSRState.Idle);
             }
             else
             {
                 acGotoLocation(stone.LastLocation);//pedimos ir a la última localización de la piedra
                 next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GoingToGripSmallStone);
-
             }
-           
-           
+                   
         }
 
         return next_state;

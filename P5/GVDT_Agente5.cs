@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GVDT_Agente6 : ISSR_Agent {
+public class GVDT_Agente5 : ISSR_Agent {
 
     /*
      * Códigos definidos por nosotros para emplear en el parámetro int ucode de los

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GVDT_Agente5 : ISSR_Agent {
+public class GVDT_Agente6 : ISSR_Agent {
 
     /*
      * Códigos definidos por nosotros para emplear en el parámetro int ucode de los
@@ -245,6 +245,7 @@ public class GVDT_Agente5 : ISSR_Agent {
 
     }
 
+    
 
     ISSRState SF_GoingToGripSmallStone()//SF--> "State Function"
     {
@@ -372,6 +373,19 @@ public class GVDT_Agente5 : ISSR_Agent {
                 
             }
            
+        }
+        if (obj.type = ISSR_Type.BigStone){
+            if(oiGrippingAgents(obj)>2){
+                
+                obj.TimeStamp = Time.time;
+                BStoneIsAvaiable(obj,false);
+            
+            }else{
+                
+                obj.TimeStamp = Time.time;
+                BStoneIsAvaiable(obj,true);
+
+            }
         }
         current_state = AgentStateMachine();
     }
@@ -581,6 +595,14 @@ public class GVDT_Agente5 : ISSR_Agent {
 
         return next_state;
          
+    }
+    private void BStoneIsAvailable(ISSR_Object stone,bool available)
+    {
+        ISSRHelp.UpdateStoneLists(stone, available, Valid_Small_Stones, Invalid_Small_Stones);
+    }
+
+    private ISSRState GetBStone(ISSR_Object stone){
+
     }
 
     private ISSRState descartarPiedraPararYPasarAEstadoIDLE(ISSR_Object stone)

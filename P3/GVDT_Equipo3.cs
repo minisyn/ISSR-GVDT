@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GVDT_Equipo1 : ISSR_TeamBehaviour {
+public class GVDT_Equipo3 : ISSR_TeamBehaviour {
 
     public override void CreateTeam()
     {
@@ -14,10 +14,12 @@ public class GVDT_Equipo1 : ISSR_TeamBehaviour {
             {//Registro del equipo
                 for (int index = 0; index < GetNumberOfAgentsInTeam(); index++)
                 {//crear agentes en posiciones
-                   CreateAgent(new GVDT_Agente1());
+                   CreateAgent(new GVDT_Agente3());
                 }
             }
         }
       
     }
+
+ 
 }

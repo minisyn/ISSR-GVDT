@@ -42,7 +42,7 @@ public class GVDT_Agente1 : ISSR_Agent
 
     public override void onGObjectScored(ISSR_Object stone_that_scored)
     {
-      //target_fixed = false;
-      Debug.LogFormat("{0}: piedra {1} en meta", Myself.Name, stone_that_scored.Name);
+        Debug.LogFormat("{0}: piedra {1} metida en meta", Myself.Name, stone_that_scored.Name);
     }
+
 }

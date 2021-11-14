@@ -328,16 +328,11 @@ public class GVDT_Agente7 : ISSR_Agent
             case ISSREventType.onUngrip:
                 if(oiSensable(focus_object)){
                     focus_object.TimeStamp = Time.time;
-                    next_state = BStoneIsAvailable(focus_object, true);
+                    BStoneIsAvailable(focus_object, true);
+                    next_state = GetBStone(focus_object);
                 }else
                     next_state = ISSRState.Idle;
-            // case ISSREventType.onGObjectCollision:
-
-            //     break;
-
-            // case ISSREventType.onStop:
-
-            //     break;
+                break;
             default:
                 if (current_event != ISSREventType.onTickElapsed)
                     Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
@@ -809,7 +804,7 @@ public class GVDT_Agente7 : ISSR_Agent
         }
 
         foreach (Vector3 ubicacionexplorada in Invalid_Locations)
-            acSendMsgObj(ISSRMsgCode.Assert, (int) GVDT_MsgCode.ExploredLocation, ubicacionexplorada);
+            acSendMsgObj(ISSRMsgCode.Assert, (int) GVDT_MsgCode.ExploredLocation, Myself ,ubicacionexplorada,0,0);
 
     }
     private ISSRState processCollision()  // Procesar colisi�n 
@@ -853,6 +848,7 @@ public class GVDT_Agente7 : ISSR_Agent
     private ISSRState resumeAfterCollision() // Permite continuar con lo que se estaba haciendo en el momento de la colisión.
     {
         ISSRState next_state = current_state;
+        int remain;
 
         switch (last_state)  // Según estado anterior 
         {

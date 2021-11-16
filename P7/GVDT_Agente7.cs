@@ -1131,10 +1131,10 @@ public class GVDT_Agente7 : ISSR_Agent
         return next_state;
     }
 
-    private void evitarChoque(ISSR_){
-        //Agentes dentro de mi rango sensible
-        if(oiSensable(obj)){
+    // private void evitarChoque(ISSR_){
+    //     //Agentes dentro de mi rango sensible
+    //     if(oiSensable(obj)){
 
-        }
-    }
+    //     }
+    // }
 }

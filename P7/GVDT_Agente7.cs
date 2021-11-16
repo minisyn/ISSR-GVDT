@@ -535,7 +535,7 @@ public class GVDT_Agente7 : ISSR_Agent
 
                 focus_object.TimeStamp = Time.time;//marcamos el tiempo en el que se informa de la piedra
                 SStoneIsAvailable(focus_object, false);
-                next_state = ISSRState.WaitforNoStonesMoving;
+                next_state = ISSRState.WaitforNoStonesMovingBigStone;
 
                 break;
 

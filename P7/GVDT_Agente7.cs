@@ -1122,7 +1122,7 @@ public class GVDT_Agente7 : ISSR_Agent
 
         ISSRState next_state;
         if ((last_state == ISSRState.GoingToGoalWithSmallStone) && (iMovingStonesInMyTeam() != 0))
-            next_state = ISSRState.ISSRState.WaitforNoStonesMoving;
+            next_state = ISSRState.WaitforNoStonesMoving;
         else if (last_state == ISSRState.GoingToGoalWithBigStone && (iMovingStonesInMyTeam() != 0))
             next_state = ISSRState.WaitforNoStonesMovingBigStone;
         else{

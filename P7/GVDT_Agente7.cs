@@ -157,7 +157,7 @@ public class GVDT_Agente7 : ISSR_Agent
             case ISSREventType.onCollision:
 
                 if (focus_object.Equals(colliding_object))//Si el objeto con el que ha colisionado es el que tenía como objetivo se solicita volver a coger el objeto
-                    next_state = GetSStone(focus_object);
+                    next_state = GetBStone(focus_object);
                 else
                     next_state = processCollision();
                 break;
@@ -165,7 +165,7 @@ public class GVDT_Agente7 : ISSR_Agent
             case ISSREventType.onManyCollisions:
 
                 if (focus_object.Equals(colliding_object))//Si el objeto con el que ha colisionado es el que tenía como objetivo se solicita volver a coger el objeto
-                    next_state = GetSStone(focus_object);
+                    next_state = GetBStone(focus_object);
                 else
                     next_state = processCollision();
                 break;
@@ -176,7 +176,7 @@ public class GVDT_Agente7 : ISSR_Agent
                 {
                     focus_object.TimeStamp = Time.time;
                     BStoneIsAvailable(focus_object, false);
-                    next_state = ISSRState.WaitforNoStonesMoving;
+                    next_state = ISSRState.WaitforNoStonesMovingBigStone;
                 }
                 else
                     next_state = ISSRState.WaitingForHelpToMoveBigStone;
@@ -184,8 +184,7 @@ public class GVDT_Agente7 : ISSR_Agent
 
             case ISSREventType.onEnterSensingArea:
 
-                if (focus_object.Equals(object_just_seen))
-                    next_state = GetBStone(focus_object);
+                if (focus_object.Equals(object_just_seen)) next_state = GetBStone(focus_object);
                 break;
 
             default:
@@ -278,9 +277,9 @@ public class GVDT_Agente7 : ISSR_Agent
 
         return next_state;
     }
-    
+
     //Asegurarse de que no hay obstaculos en el camino de forma predictiva (Con OnEnterSensingArea)
-    
+
     ISSRState SF_GoingToGoalWithBigStone()
     {
         ISSRState next_state = current_state;
@@ -291,7 +290,7 @@ public class GVDT_Agente7 : ISSR_Agent
                 if (oiGrippingAgents(GrippedObject) > 1)
                     next_state = ISSRState.WaitforNoStonesMovingBigStone;
                 else
-                    next_state = ISSRState.WaitingForHelpToMoveBigStone;
+                    next_state = ISSRState.WaitforNoStonesMovingBigStone;
                 break;
 
             case ISSREventType.onGObjectScored:
@@ -304,13 +303,13 @@ public class GVDT_Agente7 : ISSR_Agent
 
 
                 break;
-            
+
             case ISSREventType.onCollision:
 
                 next_state = ISSRState.WaitforNoStonesMovingBigStone;
                 break;
 
-            case  ISSREventType.onGObjectCollision:
+            case ISSREventType.onGObjectCollision:
 
                 next_state = ISSRState.WaitforNoStonesMovingBigStone;
                 break;
@@ -326,18 +325,19 @@ public class GVDT_Agente7 : ISSR_Agent
                 break;
 
             case ISSREventType.onUngrip:
-                if(oiSensable(focus_object)){
+                if (oiSensable(focus_object))
+                {
                     focus_object.TimeStamp = Time.time;
                     BStoneIsAvailable(focus_object, true);
                     next_state = GetBStone(focus_object);
-                }else
+                }
+                else
                     next_state = ISSRState.Idle;
                 break;
             default:
                 if (current_event != ISSREventType.onTickElapsed)
                     Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
                 break;
-
         }
 
         return next_state;
@@ -361,6 +361,7 @@ public class GVDT_Agente7 : ISSR_Agent
                 break;
 
             case ISSREventType.onDestArrived:
+
                 next_state = resumeAfterCollision();
                 break;
 
@@ -386,12 +387,12 @@ public class GVDT_Agente7 : ISSR_Agent
                 if (focus_object != null)//si hay alguna piedra  
                 {
                     if (focus_object.type == ISSR_Type.SmallStone) next_state = GetSStone(focus_object);
-                    else next_state = GetBStone(focus_object);
+                    else if (focus_object.type == ISSR_Type.BigStone) next_state = GetBStone(focus_object);
                 }
                 else if (remain > 0)
                 {
                     acGotoLocation(focus_location);
-                    comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
+                    next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
                 }
                 else//Si focus_object es null significa que no hay más piedras disponibles ni areas -- ¿Nos ponemos a molestar al equipo contrario?
                 {
@@ -401,8 +402,18 @@ public class GVDT_Agente7 : ISSR_Agent
                 }
                 break;
             case ISSREventType.onEnterSensingArea:
-                //onEnterSensingArea(object_just_seen);
+                //onEnterSensingArea(object_just_seen); -- ver qué entra en nuestra area (Si es agente, y si agarra piedra y si es de nuestro equipo avoid colision)
                 break;
+            case ISSREventType.onCollision:
+
+                next_state = processCollision();
+                break;
+
+            case ISSREventType.onManyCollisions:
+
+                next_state = processCollision();
+                break;
+
             default:
 
                 Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
@@ -535,7 +546,7 @@ public class GVDT_Agente7 : ISSR_Agent
 
                 focus_object.TimeStamp = Time.time;//marcamos el tiempo en el que se informa de la piedra
                 SStoneIsAvailable(focus_object, false);
-                next_state = ISSRState.WaitforNoStonesMovingBigStone;
+                next_state = ISSRState.WaitforNoStonesMoving;
 
                 break;
 
@@ -596,7 +607,9 @@ public class GVDT_Agente7 : ISSR_Agent
                 //Evento no considerado en este estado
                 Debug.LogFormat("{0}: Empiezo a ver '{1}'", Myself.Name, object_just_seen.Name);
                 break;
+
             default:
+
                 if (ISSREventType.onTickElapsed != current_event)
                     Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
                 break;
@@ -620,7 +633,7 @@ public class GVDT_Agente7 : ISSR_Agent
                 if (focus_object != null)//si hay alguna piedra  -- se puede comunicar al resto e ir a por ella
                 {
                     if (focus_object.type == ISSR_Type.SmallStone) next_state = GetSStone(focus_object);
-                    else next_state = GetBStone(focus_object);
+                    else if(focus_object.type == ISSR_Type.BigStone) next_state = GetBStone(focus_object);
                 }
                 else if (ISSRHelp.UpdateVisitedScoutingLocation(this))
                 {
@@ -628,13 +641,15 @@ public class GVDT_Agente7 : ISSR_Agent
                     if (remain > 0)
                     {
                         acGotoLocation(focus_location);
-                        comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
+                        next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
                     }
                     else
                         next_state = ISSRState.Idle;
-                }else{
+                }
+                else
+                {
                     acGotoLocation(focus_location);
-                    comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
+                    next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
                 }
 
                 break;
@@ -642,7 +657,11 @@ public class GVDT_Agente7 : ISSR_Agent
             case ISSREventType.onCollision:
 
                 next_state = processCollision();
+                break;
 
+            case ISSREventType.onManyCollisions:
+
+                next_state = processCollision();
                 break;
 
             case ISSREventType.onMsgArrived:
@@ -677,6 +696,8 @@ public class GVDT_Agente7 : ISSR_Agent
             else BStoneIsAvailable(obj, false);
         }
         current_state = AgentStateMachine();
+
+        //if es agente -- calcular mi distancia con él y trayectoria avoiding object si me cruzo 
     }
     public override void onGripSuccess(ISSR_Object obj_gripped)
     {
@@ -756,19 +777,29 @@ public class GVDT_Agente7 : ISSR_Agent
         switch (msg.usercode)
         {
             case (int)GVDT_MsgCode.LetsGoToGoal:
+
                 if (msg_obj.Equals(focus_object)) current_state = AgentStateMachine();
+
                 break;
+
             case (int)GVDT_MsgCode.AvailableStone:
+
                 if (msg_obj.type == ISSR_Type.SmallStone) SStoneIsAvailable(msg.Obj, true);
                 else BStoneIsAvailable(msg.Obj, true);
+
                 break;
+
             case (int)GVDT_MsgCode.NonAvailableStone:
+
                 if (msg_obj.type == ISSR_Type.SmallStone) SStoneIsAvailable(msg.Obj, false);
                 else BStoneIsAvailable(msg.Obj, false);
 
                 break;
+
             case (int)GVDT_MsgCode.ExploredLocation:
-                if(Valid_Locations.Contains(msg_location)){
+
+                if (Valid_Locations.Contains(msg_location))
+                {
                     Valid_Locations.Remove(msg_location);
                     Invalid_Locations.Add(msg_location);
                 }
@@ -784,27 +815,23 @@ public class GVDT_Agente7 : ISSR_Agent
     private void share()
     {
         foreach (ISSR_Object piedraDisponible in Valid_Small_Stones)
-        {
             acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.AvailableStone, piedraDisponible);
-        }
+
 
         foreach (ISSR_Object piedraNoDisponible in Invalid_Small_Stones)
-        {
             acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.NonAvailableStone, piedraNoDisponible);
-        }
+
 
         foreach (ISSR_Object piedraDisponible in Valid_Big_Stones)
-        {
             acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.AvailableStone, piedraDisponible);
-        }
+
 
         foreach (ISSR_Object piedraNoDisponible in Invalid_Big_Stones)
-        {
             acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.NonAvailableStone, piedraNoDisponible);
-        }
+
 
         foreach (Vector3 ubicacionexplorada in Invalid_Locations)
-            acSendMsgObj(ISSRMsgCode.Assert, (int) GVDT_MsgCode.ExploredLocation, Myself ,ubicacionexplorada,0,0);
+            acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.ExploredLocation, Myself, ubicacionexplorada, 0, 0);
 
     }
     private ISSRState processCollision()  // Procesar colisi�n 
@@ -814,29 +841,53 @@ public class GVDT_Agente7 : ISSR_Agent
         switch (current_state)
         {
             case ISSRState.GoingToGripBigStone:
+
                 last_state = current_state;//Guarda el estado actual en el último estado para así poder recuperarlo más tarde y poder completar lo que se estaba llevando a cabo antes de la colisión
                 next_state = acGotoSafeLocation();
                 break;
+
             case ISSRState.GoingToGripSmallStone:
+
                 last_state = current_state;//Guarda el estado actual en el último estado para así poder recuperarlo más tarde y poder completar lo que se estaba llevando a cabo antes de la colisión
                 next_state = acGotoSafeLocation();
                 break;
+
             case ISSRState.GoingToGoalWithSmallStone:
+
                 last_state = current_state;//Guarda el estado actual en el último estado para así poder recuperarlo más tarde y poder completar lo que se estaba llevando a cabo antes de la colisió
                 if (iMovingStonesInMyTeam() == 0)
                     next_state = acGotoSafeLocation();
                 else
                     next_state = ISSRState.WaitforNoStonesMoving;
                 break;
+
+            case ISSRState.GoingToGoalWithBigStone:
+
+                last_state = current_state;//Guarda el estado actual en el último estado para así poder recuperarlo más tarde y poder completar lo que se estaba llevando a cabo antes de la colisió
+                if (iMovingStonesInMyTeam() == 0)
+                    next_state = acGotoSafeLocation();
+                else
+                    next_state = ISSRState.WaitforNoStonesMovingBigStone;
+                break;
+
             case ISSRState.AvoidingObstacle:
+
                 next_state = acGotoSafeLocation();
                 break;
 
             case ISSRState.Scouting:
+
                 next_state = acGotoSafeLocation();
                 //HINT: Podría hacerse comprobación y si es un muñeco, que el nuestro continue su camino
                 break;
+
+            case ISSRState.Idle:
+
+                next_state = acGotoSafeLocation();
+                break;
+
             default:
+
                 if (current_event != ISSREventType.onTickElapsed)
                     Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
                 next_state = ISSRState.Error;//Da error para avisarnos en el futuro de que hemos entrado a un estado aún no considerado
@@ -853,10 +904,12 @@ public class GVDT_Agente7 : ISSR_Agent
         switch (last_state)  // Según estado anterior 
         {
             case ISSRState.GoingToGripBigStone:
+
                 next_state = GetBStone(focus_object);  // Volver a pedir coger piedra o ir a su lugar
                 break;
 
             case ISSRState.GoingToGripSmallStone:
+
                 next_state = GetSStone(focus_object);  // Volver a pedir coger piedra o ir a su lugar
                 break;
 
@@ -868,31 +921,48 @@ public class GVDT_Agente7 : ISSR_Agent
                     next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GoingToGoalWithSmallStone);
 
                 }
-                else
-                {
-                    next_state = ISSRState.WaitforNoStonesMoving;
-                }
-
+                else next_state = ISSRState.WaitforNoStonesMoving;
+                
+                
                 break;
+            
+            case ISSRState.GoingToGoalWithBigStone:
+
+                Debug.LogError("Estado no considerado en resumeAfterCollision");
+                if(iMovingStonesInMyTeam() == 0){
+                        acGotoLocation(iMyGoalLocation());  // volver a pedir ir a la meta
+                    next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GoingToGoalWithBigStone);
+                }else next_state = ISSRState.WaitforNoStonesMovingBigStone;
+                break;
+
             case ISSRState.Scouting:
-            //Comprobamos si se ha visitado la localización, en caso de ser así se actualiza a la posición más cercana al agente
+                //Comprobamos si se ha visitado la localización, en caso de ser así se actualiza a la posición más cercana al agente
                 if (ISSRHelp.UpdateVisitedScoutingLocation(this))
                 {
                     focus_location = ISSRHelp.GetCloserToMeLocationInList(this, Valid_Locations, out remain);
                     if (remain > 0)
                     {
                         acGotoLocation(focus_location);
-                        comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
+                        next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
                     }
                     else
                         next_state = ISSRState.Idle;
-                }else{
+                }
+                else
+                {
                     acGotoLocation(focus_location);
-                    comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
+                   next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
                 }
 
                 break;
+            
+            case ISSRState.Idle:
+
+                next_state = ISSRState.Idle;
+                break;
+
             default:
+
                 if (current_event != ISSREventType.onTickElapsed)
                     Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
                 next_state = ISSRState.Error;//Da error para avisarnos de que hemos vuelto a un estado que aún no se ha considerado en esta función
@@ -1037,12 +1107,16 @@ public class GVDT_Agente7 : ISSR_Agent
     {
 
         ISSRState next_state;
-        if ((last_state == ISSRState.GoingToGoalWithSmallStone) && (iMovingStonesInMyTeam() != 0))
-            next_state = ISSRState.WaitforNoStonesMoving;
+        if (((last_state == ISSRState.GoingToGoalWithSmallStone) || (last_state == ISSRState.GoingToGoalWithBigStone)) && (iMovingStonesInMyTeam() != 0))
+            next_state = SF_WaitForNoStonesMoving();
         else
         {
-            acGotoLocation(ISSRHelp.CalculateSafeLocation(this, colliding_object));
-            next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.AvoidingObstacle);
+            if (last_state == ISSRState.GoingToGoalWithBigStone) next_state = ISSRState.GoingToGoalWithBigStone;     //Going to goal con piedra grande -- PROBLEMA
+            else
+            {
+                acGotoLocation(ISSRHelp.CalculateSafeLocation(this, colliding_object));
+                next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.AvoidingObstacle);
+            }
         }
         return next_state;
     }

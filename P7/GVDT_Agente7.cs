@@ -292,7 +292,7 @@ public class GVDT_Agente7 : ISSR_Agent
                 if (oiGrippingAgents(GrippedObject) > 1)
                     next_state = ISSRState.WaitforNoStonesMovingBigStone;
                 else
-                    next_state = ISSRState.WaitforNoStonesMovingBigStone;
+                    next_state = ISSRState.WaitingForHelpToMoveBigStone;
                 break;
 
             case ISSREventType.onGObjectScored:
@@ -1121,10 +1121,11 @@ public class GVDT_Agente7 : ISSR_Agent
     {
 
         ISSRState next_state;
-        if (((last_state == ISSRState.GoingToGoalWithSmallStone) || (last_state == ISSRState.GoingToGoalWithBigStone)) && (iMovingStonesInMyTeam() != 0))
-            next_state = SF_WaitForNoStonesMoving();
-        else
-        {
+        if ((last_state == ISSRState.GoingToGoalWithSmallStone) && (iMovingStonesInMyTeam() != 0))
+            next_state = ISSRState.ISSRState.WaitforNoStonesMoving;
+        else if((last_state == ISSRState.GoingToGoalWithBigStone)) && (iMovingStonesInMyTeam() != 0))
+            next_state = ISSRState.WaitforNoStonesMovingBigStone;
+        else{
                 acGotoLocation(ISSRHelp.CalculateSafeLocation(this, colliding_object));
                 next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.AvoidingObstacle);
         }

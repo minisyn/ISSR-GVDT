@@ -445,12 +445,12 @@ public class GVDT_Agente7 : ISSR_Agent
 
             case ISSREventType.onCollision:
 
-                next_state = processCollision();
+                next_state = resumeAfterCollision();
                 break;
 
             case ISSREventType.onGObjectCollision:
 
-                next_state = processCollision();
+                next_state = resumeAfterCollision();
                 break;
 
             case ISSREventType.onGObjectScored:

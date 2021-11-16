@@ -630,7 +630,7 @@ public class GVDT_Agente7 : ISSR_Agent
     }
     ISSRState SF_Scouting()
     {
-
+        
         ISSRState next_state = current_state;
         int remain;
 

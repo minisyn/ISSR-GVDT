@@ -218,6 +218,12 @@ public class GVDT_Agente7 : ISSR_Agent
 
             case ISSREventType.onCollision:
 
+                next_state = GetBStone(focus_object);
+                break;
+
+            case ISSREventType.onGObjectCollision:
+
+                next_state = GetBStone(focus_object);
                 break;
 
             default:
@@ -288,6 +294,7 @@ public class GVDT_Agente7 : ISSR_Agent
 
         switch (current_event)
         {
+            
             case ISSREventType.onPushTimeOut:
                 if (oiGrippingAgents(GrippedObject) > 1)
                     next_state = ISSRState.WaitforNoStonesMovingBigStone;
@@ -335,6 +342,16 @@ public class GVDT_Agente7 : ISSR_Agent
                 }
                 else
                     next_state = ISSRState.Idle;
+                break;
+
+            case ISSREventType.onMsgArrived:
+                if ((user_msg_code == (int)GVDT_MsgCode.LetsGoToGoal && msg_obj.Equals(focus_object)) && (iMovingStonesInMyTeam() == 0))
+                {
+                    acGotoLocation(iMyGoalLocation());
+                    next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GoingToGoalWithBigStone);
+                }
+                else
+                    next_state = ISSRState.WaitforNoStonesMovingBigStone;
                 break;
             default:
                 if (current_event != ISSREventType.onTickElapsed)
@@ -445,12 +462,12 @@ public class GVDT_Agente7 : ISSR_Agent
 
             case ISSREventType.onCollision:
 
-                next_state = resumeAfterCollision();
+                next_state = processCollision();
                 break;
 
             case ISSREventType.onGObjectCollision:
 
-                next_state = resumeAfterCollision();
+                next_state = processCollision();
                 break;
 
             case ISSREventType.onGObjectScored:
@@ -882,17 +899,20 @@ public class GVDT_Agente7 : ISSR_Agent
 
             case ISSRState.AvoidingObstacle:
 
+                last_state = current_state;
                 next_state = acGotoSafeLocation();
                 break;
 
             case ISSRState.Scouting:
-
+                
+                last_state = current_state;
                 next_state = acGotoSafeLocation();
                 //HINT: Podría hacerse comprobación y si es un muñeco, que el nuestro continue su camino
                 break;
 
             case ISSRState.Idle:
 
+                last_state = current_state;
                 next_state = acGotoSafeLocation();
                 break;
 
@@ -931,8 +951,7 @@ public class GVDT_Agente7 : ISSR_Agent
                     acGotoLocation(iMyGoalLocation());  // volver a pedir ir a la meta
                     next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GoingToGoalWithSmallStone);
 
-                }
-                else next_state = ISSRState.WaitforNoStonesMoving;
+                } else next_state = ISSRState.WaitforNoStonesMoving;
                 
                 
                 break;

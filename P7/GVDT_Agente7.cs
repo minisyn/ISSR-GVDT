@@ -146,18 +146,12 @@ public class GVDT_Agente7 : ISSR_Agent
 
                 next_state = resumeAfterCollision();
                 break;
+
             case ISSREventType.onCollision:
                 
                 next_state = processCollision();
                 break;
-            case ISSREventType.onMsgArrived:
 
-                if (user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay)
-                {  
-                    acStop();
-                    next_state=comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GettingOutOfTheWay);           
-                }
-                break;
             default:
                 break;
         }
@@ -237,14 +231,8 @@ public class GVDT_Agente7 : ISSR_Agent
                 break;
 
             case ISSREventType.onMsgArrived:
-
-                if ((user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay))
-                {
-                    StartFlee(msg_obj.LastLocation);
-                    next_state = ISSRState.GettingOutOfTheWay;
-
-                }
-                break;
+                if(user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay) next_state = ISSRState.GettingOutOfTheWay;
+            break;
 
             default:
 
@@ -558,6 +546,10 @@ public class GVDT_Agente7 : ISSR_Agent
                 next_state = processCollision();
                 break;
 
+            case ISSREventType.onMsgArrived:
+                if(user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay) next_state = ISSRState.GettingOutOfTheWay;
+            break;
+
             default:
 
                 Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
@@ -605,6 +597,10 @@ public class GVDT_Agente7 : ISSR_Agent
                 Debug.LogFormat("{0}: Empiezo a ver '{1}'", Myself.Name, object_just_seen.Name);
 
                 break;
+            
+            case ISSREventType.onMsgArrived:
+                if(user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay) next_state = ISSRState.GettingOutOfTheWay;
+            break;
 
             default:
                 if (current_event != ISSREventType.onTickElapsed)
@@ -717,6 +713,10 @@ public class GVDT_Agente7 : ISSR_Agent
                 else
                     next_state = processCollision();
                 break;
+
+            case ISSREventType.onMsgArrived:
+                if(user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay) next_state = ISSRState.GettingOutOfTheWay;
+            break;
             /*case ISSREventType.onMsgArrived:
 
                 if ((user_msg_code == (int)GVDT_MsgCode.GoingToGripSS) && msg_obj.Equals(focus_object))
@@ -728,16 +728,6 @@ public class GVDT_Agente7 : ISSR_Agent
                    
                 }
                 break;*/
-
-            case ISSREventType.onMsgArrived:
-
-                if ((user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay))
-                { 
-                    StartFlee(msg_obj.LastLocation);
-                    next_state = ISSRState.GettingOutOfTheWay;
-
-                }
-                break;
 
             default:
                 if (current_event != ISSREventType.onTickElapsed)
@@ -832,15 +822,22 @@ public class GVDT_Agente7 : ISSR_Agent
                 next_state = processCollision();
                 break;
 
-            case ISSREventType.onMsgArrived:
+            case ISSREventType.onDestArrived:
 
-                if ((user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay))
+                focus_location = ISSRHelp.GetCloserToMeLocationInList(this, Valid_Locations, out remain);
+
+                if (remain > 0)
                 {
-                    StartFlee(msg_obj.LastLocation);
-                    next_state = ISSRState.GettingOutOfTheWay;
-
+                    acGotoLocation(focus_location);
+                    next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.Scouting);
                 }
+                else
+                    next_state = ISSRState.Idle;
                 break;
+
+            case ISSREventType.onMsgArrived:
+                if (user_msg_code == (int)GVDT_MsgCode.GetOuttaMyWay) next_state = ISSRState.GettingOutOfTheWay;
+            break;
 
             default:
                 if (current_event != ISSREventType.onTickElapsed)
@@ -980,6 +977,11 @@ public class GVDT_Agente7 : ISSR_Agent
 
                 break;
 
+            case (int)GVDT_MsgCode.GetOuttaMyWay:
+
+                if(msg_obj != GrippedObject) StartFlee(msg_obj.LastLocation);
+                break;
+
             /*case (int)GVDT_MsgCode.GetOuttaMyWay:
 
                 if (!msg_obj.Equals(GrippedObject))
@@ -989,18 +991,15 @@ public class GVDT_Agente7 : ISSR_Agent
                     
                 }
                 break;*/
-                /*case (int)GVDT_MsgCode.GoingToGripSS:
+                case (int)GVDT_MsgCode.GoingToGripSS:
 
-                     if ((msg.usercode == (int)GVDT_MsgCode.GoingToGripSS) && msg.Obj.Equals(focus_object))
+                     if (msg.Obj.Equals(focus_object) && !msg.Sender.Equals(Myself))
                      {
-
                          focus_object.TimeStamp = Time.time;
                          BStoneIsAvailable(msg_obj, false);
-
-
                      }
 
-                     break;*/
+                     break;
         }
     }
     /*
@@ -1255,7 +1254,7 @@ public class GVDT_Agente7 : ISSR_Agent
             }
             else
             {
-                //acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.GoingToGripSS, focus_object);//indica de que está yendo hacia una piedra concreta para cogerla   
+                acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.GoingToGripSS, focus_object);//indica de que está yendo hacia una piedra concreta para cogerla   
                 acGripObject(stone);
                 next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GoingToGripSmallStone);
 

@@ -22,7 +22,6 @@ public class GVDT_Agente7 : ISSR_Agent
             {
                 ISSRHelp.UpdateVisitedScoutingLocation(this);
             }
-            //if currentstate=ISSRState.O
             current_event = ISSREventType.onTickElapsed;
             current_state = AgentStateMachine();
             share();
@@ -469,7 +468,7 @@ public class GVDT_Agente7 : ISSR_Agent
                 {
                     focus_object = ISSRHelp.GetCloserToMeObjectInList(this, Valid_Small_Stones, ISSR_Type.SmallStone);
                     last_object = null;
-                }
+                }else focus_object = ISSSHelp.Get_next_available_stone_closer_to_me(this);
                 if (focus_object != null)//si hay alguna piedra  
                 {
                     if (focus_object.type == ISSR_Type.SmallStone) next_state = GetSStone(focus_object);
@@ -892,7 +891,7 @@ public class GVDT_Agente7 : ISSR_Agent
                 break;
             case (int)GVDT_MsgCode.HelpRequest:
                 msg_obj.TimeStamp = Time.time;
-                //acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.HelpResponse, this.Myself);
+                acSendMsgObj(ISSRMsgCode.Assert, (int)GVDT_MsgCode.HelpResponse, this.Myself);
                 BStoneIsAvailable(msg_obj,false);
                 GetBStone(msg_obj);
                 break;

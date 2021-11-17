@@ -206,6 +206,8 @@ public class GVDT_Agente7 : ISSR_Agent
         {
             case ISSREventType.onUngrip:
 
+                focus_object.TimeStamp = Time.time;
+                BStoneIsAvailable(focus_object, true);
                 next_state = GetBStone(focus_object);
                 break;
 
@@ -218,12 +220,12 @@ public class GVDT_Agente7 : ISSR_Agent
 
             case ISSREventType.onCollision:
 
-                next_state = GetBStone(focus_object);
+                next_state = ISSRState.WaitingForHelpToMoveBigStone;
                 break;
 
             case ISSREventType.onGObjectCollision:
 
-                next_state = GetBStone(focus_object);
+                next_state = ISSRState.WaitingForHelpToMoveBigStone;
                 break;
 
             default:
@@ -274,6 +276,13 @@ public class GVDT_Agente7 : ISSR_Agent
                 focus_object.TimeStamp = Time.time;
                 BStoneIsAvailable(focus_object, true);
                 next_state = ISSRState.WaitingForHelpToMoveBigStone;
+                break;
+
+            case ISSREventType.onPushTimeOut:
+                if (oiGrippingAgents(GrippedObject) > 1)
+                    next_state = ISSRState.WaitforNoStonesMovingBigStone;
+                else
+                    next_state = ISSRState.WaitingForHelpToMoveBigStone;
                 break;
 
             default:
@@ -338,21 +347,22 @@ public class GVDT_Agente7 : ISSR_Agent
                 {
                     focus_object.TimeStamp = Time.time;
                     BStoneIsAvailable(focus_object, true);
-                    next_state = GetBStone(focus_object);
+                     next_state = GetBStone(focus_object);
                 }
                 else
                     next_state = ISSRState.Idle;
                 break;
 
             case ISSREventType.onMsgArrived:
+
                 if ((user_msg_code == (int)GVDT_MsgCode.LetsGoToGoal && msg_obj.Equals(focus_object)) && (iMovingStonesInMyTeam() == 0))
                 {
                     acGotoLocation(iMyGoalLocation());
                     next_state = comprobarErrorEnAccionYPasarASiguienteEstado(ISSRState.GoingToGoalWithBigStone);
                 }
-                else
-                    next_state = ISSRState.WaitforNoStonesMovingBigStone;
+
                 break;
+
             default:
                 if (current_event != ISSREventType.onTickElapsed)
                     Debug.LogWarningFormat("{0}: Evento '{1}' no considerado en estado '{2}'", Myself.Name, current_event, current_state);
@@ -370,8 +380,18 @@ public class GVDT_Agente7 : ISSR_Agent
             case ISSREventType.onUngrip:
 
                 focus_object.TimeStamp = Time.time;
-                SStoneIsAvailable(focus_object, true);
-                next_state = GetSStone(focus_object);
+                if (focus_object.type == ISSR_Type.SmallStone)
+                {
+                    SStoneIsAvailable(focus_object, true);
+                    next_state = GetSStone(focus_object);
+
+                }
+                else if (focus_object.type == ISSR_Type.BigStone)
+                {
+                    BStoneIsAvailable(focus_object, true);
+                    next_state = GetBStone(focus_object);
+                }
+
                 break;
 
             case ISSREventType.onTimerOut:
@@ -385,6 +405,14 @@ public class GVDT_Agente7 : ISSR_Agent
                 break;
 
             case ISSREventType.onCollision:
+
+                next_state = ISSRState.SleepingAfterCollisions;
+                break;
+            case ISSREventType.onGObjectCollision:
+
+                next_state = ISSRState.SleepingAfterCollisions;
+                break;
+             case ISSREventType.onManyCollisions:
 
                 next_state = ISSRState.SleepingAfterCollisions;
                 break;
@@ -899,7 +927,7 @@ public class GVDT_Agente7 : ISSR_Agent
 
             case ISSRState.AvoidingObstacle:
 
-                last_state = current_state;
+                
                 next_state = acGotoSafeLocation();
                 break;
 
@@ -932,7 +960,7 @@ public class GVDT_Agente7 : ISSR_Agent
 
         int remain;
 
-        switch (last_state)  // Según estado anterior 
+        switch (last_state)
         {
             case ISSRState.GoingToGripBigStone:
 
